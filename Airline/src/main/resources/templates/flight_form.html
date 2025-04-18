@@ -1,0 +1,59 @@
+<!-- File: src/main/resources/templates/flight_form.html -->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario de Evaluación de Vuelo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Formulario de Evaluación de Vuelo</h2>
+    <form th:action="@{/flight/evaluate}" th:object="${flightRequest}" method="post" class="row g-3">
+        <!-- Nombre -->
+        <div class="col-md-6">
+            <label class="form-label" for="passenger.name">Nombre:</label>
+            <input type="text" id="passenger.name" th:field="*{passenger.name}" class="form-control" />
+            <div class="text-danger" th:if="${#fields.hasErrors('passenger.name')}" th:errors="*{passenger.name}"></div>
+        </div>
+        <!-- Edad -->
+        <div class="col-md-3">
+            <label class="form-label" for="passenger.age">Edad:</label>
+            <input type="number" id="passenger.age" th:field="*{passenger.age}" class="form-control" />
+            <div class="text-danger" th:if="${#fields.hasErrors('passenger.age')}" th:errors="*{passenger.age}"></div>
+        </div>
+        <!-- Membresía -->
+        <div class="col-md-3">
+            <label class="form-label" for="passenger.membershipStatus">Membresía:</label>
+            <select id="passenger.membershipStatus" th:field="*{passenger.membershipStatus}" class="form-select">
+                <option th:each="status : ${T(com.udea.Airline.model.MembershipStatus).values()}"
+                        th:value="${status}" th:text="${status}">STATUS</option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('passenger.membershipStatus')}" th:errors="*{passenger.membershipStatus}"></div>
+        </div>
+        <!-- Viaja con niños -->
+        <div class="col-md-4 form-check mt-3">
+            <input type="checkbox" id="passenger.travelingWithChildren" th:field="*{passenger.travelingWithChildren}" class="form-check-input" />
+            <label class="form-check-label" for="passenger.travelingWithChildren">Viaja con niños</label>
+        </div>
+        <!-- Preferencia de asiento -->
+        <div class="col-md-4">
+            <label class="form-label" for="passenger.seatPreference">Preferencia de asiento:</label>
+            <select id="passenger.seatPreference" th:field="*{passenger.seatPreference}" class="form-select">
+                <option th:each="pref : ${T(com.udea.Airline.model.SeatPreference).values()}"
+                        th:value="${pref}" th:text="${pref}">PREF</option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('passenger.seatPreference')}" th:errors="*{passenger.seatPreference}"></div>
+        </div>
+        <!-- Peso de equipaje -->
+        <div class="col-md-4">
+            <label class="form-label" for="passenger.luggageWeightKg">Peso del equipaje (kg):</label>
+            <input type="number" step="0.1" id="passenger.luggageWeightKg" th:field="*{passenger.luggageWeightKg}" class="form-control" />
+            <div class="text-danger" th:if="${#fields.hasErrors('passenger.luggageWeightKg')}" th:errors="*{passenger.luggageWeightKg}"></div>
+        </div>
+        <!-- Botón enviar -->
+        <div class="col-12 mt-3">
+            <button type="submit" class="btn btn-primary">Evaluar Vuelo</button>
+        </div>
+    </form>
+</div>
