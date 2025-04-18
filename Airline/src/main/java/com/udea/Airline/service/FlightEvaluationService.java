@@ -25,15 +25,29 @@ public class FlightEvaluationService {
      * dispara las reglas y retorna un FlightResponse con los resultados.
      */
     public FlightResponse evaluate(FlightRequest request) {
-        // 1. Generar datos aleatorios de vuelo
-        double randomDuration = ThreadLocalRandom.current().nextDouble(0.5, 12.0);
-        int randomDelay = ThreadLocalRandom.current().nextInt(0, 241);
-        boolean randomEmergency = ThreadLocalRandom.current().nextBoolean();
+//        // 1. Generar datos aleatorios de vuelo
+//        double randomDuration = ThreadLocalRandom.current().nextDouble(0.5, 12.0);
+//        int randomDelay = ThreadLocalRandom.current().nextInt(0, 241);
+//        boolean randomEmergency = ThreadLocalRandom.current().nextBoolean();
+//
+//        request.setFlightDurationHours(randomDuration);
+//        request.setFlightDelayMinutes(randomDelay);
+//        request.setEmergencyExitAvailable(randomEmergency);
 
-        request.setFlightDurationHours(randomDuration);
-        request.setFlightDelayMinutes(randomDelay);
-        request.setEmergencyExitAvailable(randomEmergency);
+        if (request.getFlightDurationHours() == null) {
+            double randomDuration = ThreadLocalRandom.current().nextDouble(0.5, 12.0);
+            request.setFlightDurationHours(randomDuration);
+        }
 
+        if (request.getFlightDelayMinutes() == null) {
+            int randomDelay = ThreadLocalRandom.current().nextInt(0, 241);
+            request.setFlightDelayMinutes(randomDelay);
+        }
+
+        if (request.getEmergencyExitAvailable() == null) {
+            boolean randomEmergency = ThreadLocalRandom.current().nextBoolean();
+            request.setEmergencyExitAvailable(randomEmergency);
+        }
         // 2. Preparar respuesta y sesión Drools
         FlightResponse response = new FlightResponse();
         KieSession kieSession = kieContainer.newKieSession();

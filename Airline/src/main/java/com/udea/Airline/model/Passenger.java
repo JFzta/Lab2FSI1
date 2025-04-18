@@ -21,7 +21,7 @@ public class Passenger {
         @NotNull(message = "Debe indicar si viaja con niños")
         private Boolean travelingWithChildren;
 
-        @NotBlank(message = "La preferencia de asiento es obligatoria")
+        //@NotBlank(message = "La preferencia de asiento es obligatoria")
         private SeatPreference seatPreference;
 
         @NotNull(message = "El peso del equipaje es obligatorio")

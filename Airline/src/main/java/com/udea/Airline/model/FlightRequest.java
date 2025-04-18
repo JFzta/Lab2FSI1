@@ -11,15 +11,15 @@ public class FlightRequest {
     @Valid
     private Passenger passenger;
 
-    @NotNull(message = "Debe asignarse la duración del vuelo")
-    @Min(value = 0, message = "La duración del vuelo debe ser un valor positivo")
+    //@NotNull(message = "Debe asignarse la duración del vuelo")
+    //@Min(value = 0, message = "La duración del vuelo debe ser un valor positivo")
     private Double flightDurationHours;
 
-    @NotNull(message = "Debe indicarse el retraso del vuelo")
-    @Min(value = 0, message = "El retraso del vuelo no puede ser negativo")
+    //@NotNull(message = "Debe indicarse el retraso del vuelo")
+    //@Min(value = 0, message = "El retraso del vuelo no puede ser negativo")
     private Integer flightDelayMinutes;
 
-    @NotNull(message = "Debe indicarse disponibilidad de asiento de emergencia")
+    //@NotNull(message = "Debe indicarse disponibilidad de asiento de emergencia")
     private Boolean emergencyExitAvailable;
 
     public FlightRequest() {}
