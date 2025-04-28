@@ -9,14 +9,18 @@ import com.udea.Airline.model.SeatPreference;
 dialect "mvel"
 // Regla 1: Upgrade a clase ejecutiva para miembros frecuentes con retrasos
 rule "UpgradeToBusinessClassForFrequentFlyersWithDelays"
-    when
-        $request : FlightRequest($passenger : passenger, $delay : flightDelayMinutes)
-        eval($delay > 60)
-        eval($passenger.membershipStatus == "GOLD" || $passenger.membershipStatus == "PLATINUM")
-        $response : FlightResponse()
-    then
-        $response.setUpgradeToBusiness(true);
-        $response.setMessage("Ascenso a clase ejecutiva por retraso y membresía premium.");
+    // si quieres, le das prioridad baja:
+    salience 2
+when
+    $request   : FlightRequest( $passenger : passenger, $delay : flightDelayMinutes )
+    eval( $delay >  60 )
+    eval( $passenger.getMembershipStatus() == MembershipStatus.GOLD
+       || $passenger.getMembershipStatus() == MembershipStatus.PLATINUM )
+    eval( $passenger.getLuggageWeightKg() <= 23.0 )   // <-- nueva línea
+    $response  : FlightResponse()
+then
+    $response.setUpgradeToBusiness(true);
+    $response.setMessage("Ascenso a clase ejecutiva por retraso y membresía premium.");
 end
 
 // Regla 2: Check-in prioritario para adultos mayores
@@ -54,16 +58,21 @@ end
 
 // Regla 5: Asignar asiento de emergencia a adultos jóvenes (18-40, sin preferencia)
 rule "AssignEmergencyExitSeatToYoungAdults"
-when
-    $request   : FlightRequest($passenger : passenger, emergencyExitAvailable == true)
-    eval($passenger.getAge() >= 18 && $passenger.getAge() <= 40)
-    eval($passenger.getSeatPreference()=="ANY")
-    $response  : FlightResponse()
-then
-    $response.setEmergencySeatAssigned(true);
-    $response.setMessage("Asiento de salida de emergencia asignado.");
+    salience 5
+    when
+        $request : FlightRequest(
+            passenger.age >= 18 && passenger.age <= 40,
+            passenger.seatPreference == SeatPreference.ANY,
+            emergencyExitAvailable == true
+        )
+        $response : FlightResponse( emergencySeatAssigned == false )
+    then
+        modify($response) {
+            setEmergencySeatAssigned(true),
+            setMessage("Asiento de salida de emergencia asignado.")
+        }
+        System.out.println("Emerg exit seat → " + $request.getPassenger().getName());
 end
-
 // Regla 6: Compensación por retrasos extremos (> 180 min)
 rule "CompensationForExtremeDelays"
 when
@@ -113,11 +122,16 @@ end
 // Regla 10: Asiento preferencial para familias (viaja con niños y sin preferencia)
 rule "PreferentialSeatForFamilies"
 when
-    $request   : FlightRequest($passenger : passenger)
-    eval($passenger.getTravelingWithChildren())
-    eval($passenger.getSeatPreference()=="ANY")
-    $response  : FlightResponse()
+    $request : FlightRequest(
+        passenger.travelingWithChildren == true,
+        passenger.seatPreference == SeatPreference.ANY
+    )
+    $response : FlightResponse(familySeatAssigned == false)
 then
-    $response.setFamilySeatAssigned(true);
-    $response.setMessage("Asiento preferencial asignado para familias.");
+    modify($response) {
+        setFamilySeatAssigned(true),
+        setMessage("Asiento preferencial asignado para familias.")
+    }
+    System.out.println("▶ Asignado asiento familiar a " + $request.getPassenger().getName());
 end
+
